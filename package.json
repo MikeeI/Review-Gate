@@ -1,0 +1,31 @@
+{
+    "name": "default-husky-setup",
+    "version": "1.0.0",
+    "description": "A web archiving tool that uses the Internet Archive's Wayback Machine API to preserve websites. Built with the Carmack development system for clean, unified architecture.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prepare": "husky",
+        "lint": "eslint . --fix",
+        "lint:py": "python -m ruff check --fix .",
+        "lint:all": "npm run lint && npm run lint:py"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "eslint": "^9.28.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.1.0",
+        "prettier": "^3.5.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MikeeI/project_webarchiver.git"
+    },
+    "type": "module",
+    "bugs": {
+        "url": "https://github.com/MikeeI/project_webarchiver/issues"
+    },
+    "homepage": "https://github.com/MikeeI/project_webarchiver#readme"
+}
