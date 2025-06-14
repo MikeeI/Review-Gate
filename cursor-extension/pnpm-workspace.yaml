@@ -1,0 +1,22 @@
+# pnpm workspace configuration for Review Gate V2 extension development
+packages:
+    - '.'
+    - '../'
+
+# Shared dependencies and configuration
+catalog:
+    # Extension development tools
+    '@vscode/vsce': '^2.32.0'
+    'eslint': '^9.28.0'
+    'rimraf': '^5.0.0'
+
+    # Utility packages for extension
+    'path': 'latest'
+    'fs': 'latest'
+    'os': 'latest'
+
+# pnpm configuration
+packageExtensions:
+    '@vscode/vsce':
+        peerDependencies:
+            typescript: '*'

@@ -1,0 +1,31 @@
+{
+    "name": "project-cursor-enhancer",
+    "version": "3.0.0",
+    "description": "Cursor Enhancer - Advanced MCP server with interactive popup integration for Cursor IDE. Provides enhanced AI agent communication through text and image inputs.",
+    "main": "cursor_enhancer_mcp.py",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prepare": "husky",
+        "lint": "eslint . --fix",
+        "lint:py": "python -m ruff check --fix .",
+        "lint:all": "npm run lint && npm run lint:py"
+    },
+    "keywords": [
+        "cursor",
+        "ai",
+        "mcp",
+        "popup",
+        "ide",
+        "enhancer",
+        "agent"
+    ],
+    "author": "Lakshman Turlapati",
+    "license": "ISC",
+    "devDependencies": {
+        "eslint": "^9.28.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.1.0",
+        "prettier": "^3.5.3"
+    },
+    "type": "module"
+}

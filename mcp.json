@@ -1,0 +1,15 @@
+{
+    "mcpServers": {
+        "cursor-enhancer": {
+            "command": "/Users/YOUR_USERNAME/cursor-extensions/cursor-enhancer/.venv/bin/python",
+            "args": [
+                "/Users/YOUR_USERNAME/cursor-extensions/cursor-enhancer/cursor_enhancer_mcp.py"
+            ],
+            "env": {
+                "PYTHONPATH": "/Users/YOUR_USERNAME/cursor-extensions/cursor-enhancer",
+                "PYTHONUNBUFFERED": "1",
+                "CURSOR_ENHANCER_MODE": "cursor_integration"
+            }
+        }
+    }
+}

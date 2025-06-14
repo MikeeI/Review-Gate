@@ -1,0 +1,76 @@
+{
+    "name": "cursor-enhancer",
+    "displayName": "Cursor Enhancer",
+    "description": "Interactive AI enhanced Cursor IDE integration with popup dialogs, voice commands and image uploads",
+    "version": "3.0.0",
+    "author": "Lakshman Turlapati",
+    "publisher": "LakshmanTurlapati",
+    "icon": "icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/LakshmanTurlapati/Review-Gate.git"
+    },
+    "categories": [
+        "Other"
+    ],
+    "keywords": [
+        "cursor",
+        "ai",
+        "review",
+        "mcp",
+        "voice",
+        "popup"
+    ],
+    "engines": {
+        "vscode": "^1.60.0"
+    },
+    "activationEvents": [
+        "onStartupFinished",
+        "onCommand:cursorEnhancer.openChat"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "cursorEnhancer.openChat",
+                "title": "Open Cursor Enhancer",
+                "category": "Cursor Enhancer"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "cursorEnhancer.openChat",
+                "key": "cmd+shift+r",
+                "mac": "cmd+shift+r",
+                "win": "ctrl+shift+r",
+                "linux": "ctrl+shift+r"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "echo 'No compilation needed for this extension'",
+        "compile": "echo 'No compilation needed for this extension'",
+        "package": "vsce package --out ./dist/ --no-dependencies",
+        "package:dev": "vsce package --pre-release --out ./dist/ --no-dependencies",
+        "install:local": "code --install-extension ./dist/cursor-enhancer-*.vsix",
+        "install:cursor": "cursor --install-extension ./dist/cursor-enhancer-*.vsix",
+        "clean": "rimraf ./dist",
+        "build": "npm run clean && npm run package",
+        "build:dev": "npm run clean && npm run package:dev",
+        "publish": "vsce publish",
+        "publish:dev": "vsce publish --pre-release",
+        "lint": "eslint extension.js",
+        "lint:fix": "eslint extension.js --fix",
+        "test": "echo 'No tests configured yet'",
+        "dev": "npm run build && npm run install:cursor",
+        "release": "npm run build && npm run install:cursor && echo 'Extension built and installed in Cursor'",
+        "version:patch": "npm version patch && npm run build",
+        "version:minor": "npm version minor && npm run build",
+        "version:major": "npm version major && npm run build"
+    },
+    "devDependencies": {
+        "@vscode/vsce": "^2.32.0",
+        "eslint": "^9.28.0",
+        "rimraf": "^5.0.0"
+    }
+}

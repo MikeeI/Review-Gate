@@ -1,0 +1,24 @@
+extend-exclude = [
+    ".venv/**",
+    ".venv_*/**",
+    "venv/**",
+    "__pycache__",
+    ".git",
+    ".ruff_cache",
+    "backup/**",
+    "legacy/**",
+]
+target-version = "py313"
+line-length = 140
+[lint]
+select = ["I", "UP", "W291", "W292", "W293", "C4"]
+ignore = ["F841", "F401"]
+fixable = ["ALL"]
+[lint.isort]
+combine-as-imports = true
+known-first-party = []
+force-single-line = false
+[format]
+quote-style = "double"
+skip-magic-trailing-comma = false
+indent-style = "space"
