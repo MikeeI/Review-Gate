@@ -10,20 +10,14 @@ Requirements:
 """
 
 import asyncio
-import glob
-import logging
 import os
 import sys
-import threading
-import time
-from datetime import datetime
-from pathlib import Path
 
 # MCP imports
 from mcp.server.stdio import stdio_server
 
 # Import new modular components
-from src.config.constants import FilePatterns, TimeoutConfig
+from src.config.constants import TimeoutConfig
 from src.managers.response_manager import ResponseManager
 from src.managers.trigger_manager import TriggerManager
 from src.protocol.mcp_handler import McpProtocolHandler

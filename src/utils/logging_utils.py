@@ -1,6 +1,5 @@
 import logging
 import sys
-from typing import Optional
 
 from .file_operations import get_temp_path
 

@@ -275,17 +275,17 @@ class PopupManager {
     }
 
     // Placeholder methods to be implemented with other managers
-    handleReviewMessage(text, attachments, triggerId, mcpIntegration, specialHandling) {
+    handleReviewMessage(text, _attachments, _triggerId, _mcpIntegration, _specialHandling) {
         console.log('handleReviewMessage called:', text);
         // To be implemented with file watcher integration
     }
 
-    handleFileAttachment(triggerId) {
+    handleFileAttachment(_triggerId) {
         console.log('handleFileAttachment called');
         // To be implemented with file watcher integration
     }
 
-    handleImageUpload(triggerId) {
+    handleImageUpload(_triggerId) {
         console.log('handleImageUpload called');
         // To be implemented with file watcher integration
     }

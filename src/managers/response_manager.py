@@ -1,13 +1,11 @@
 import asyncio
-import glob
 import json
 import logging
 import time
 from pathlib import Path
-from typing import Optional
 
 from ..config.constants import FilePatterns, TimeoutConfig
-from ..utils.file_operations import get_temp_path, read_json_file
+from ..utils.file_operations import get_temp_path
 
 
 class ResponseManager:
@@ -108,7 +106,7 @@ class ResponseManager:
         if timeout is None:
             timeout = TimeoutConfig.EXTENSION_ACKNOWLEDGEMENT
 
-        ack_file = Path(get_temp_path(f"review_gate_ack_{trigger_id}.json"))
+        ack_file = Path(get_temp_path(f"cursor_enhancer_ack_{trigger_id}.json"))
 
         self.logger.info(f"🔍 Monitoring for extension acknowledgement: {ack_file}")
 
@@ -125,8 +123,8 @@ class ResponseManager:
                     try:
                         ack_file.unlink()
                         self.logger.info(f"🧹 Acknowledgement file cleaned up")
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.warning(f"Failed to cleanup acknowledgement file: {e}")
 
                     if ack_status:
                         self.logger.info(f"📨 EXTENSION ACKNOWLEDGED popup activation for trigger {trigger_id}")

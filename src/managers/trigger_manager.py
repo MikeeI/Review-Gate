@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from ..config.constants import FilePatterns
-from ..utils.file_operations import get_temp_path, write_json_file
+from ..utils.file_operations import get_temp_path
 
 
 class TriggerManager:
@@ -24,7 +24,7 @@ class TriggerManager:
 
             trigger_data = {
                 "timestamp": datetime.now().isoformat(),
-                "system": "review-gate-v2",
+                "system": "cursor-enhancer",
                 "editor": "cursor",
                 "data": data,
                 "pid": os.getpid(),
@@ -84,7 +84,7 @@ class TriggerManager:
                 self.logger.info(f"🎯 This is expected behavior - extension is working properly")
 
             # Check if extension might be watching
-            log_file = Path(get_temp_path("review_gate_v2.log"))
+            log_file = Path(get_temp_path("cursor_enhancer.log"))
             if log_file.exists():
                 self.logger.info(f"📝 MCP log file exists: {log_file}")
             else:
@@ -115,7 +115,7 @@ class TriggerManager:
                 backup_data = {
                     "backup_id": i,
                     "timestamp": datetime.now().isoformat(),
-                    "system": "review-gate-v2",
+                    "system": "cursor-enhancer",
                     "data": data,
                     "mcp_integration": True,
                     "immediate_activation": True,

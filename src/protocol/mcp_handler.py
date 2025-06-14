@@ -1,9 +1,7 @@
-import asyncio
 import logging
-from typing import Any
 
 from mcp.server import Server
-from mcp.types import TextContent, Tool
+from mcp.types import Tool
 
 
 class McpProtocolHandler:

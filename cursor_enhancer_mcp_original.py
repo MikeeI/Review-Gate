@@ -15,13 +15,9 @@ import json
 import logging
 import os
 import sys
-import tempfile
 import time
-import uuid
-from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
 
 # Speech-to-text imports
 try:
@@ -32,15 +28,9 @@ except ImportError:
     WHISPER_AVAILABLE = False
 
 from mcp.server import Server
-from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
 from mcp.types import (
-    CallToolRequest,
-    CallToolResult,
-    EmbeddedResource,
     ImageContent,
-    ListToolsRequest,
-    Resource,
     TextContent,
     Tool,
 )
@@ -607,8 +597,8 @@ class ReviewGateServer:
                     try:
                         ack_file.unlink()
                         logger.info(f"🧹 Acknowledgement file cleaned up")
-                    except:
-                        pass
+                    except Exception as e:
+                        logger.warning(f"Failed to cleanup acknowledgement file: {e}")
 
                     if ack_status:
                         logger.info(f"📨 EXTENSION ACKNOWLEDGED popup activation for trigger {trigger_id}")
@@ -930,8 +920,8 @@ class ReviewGateServer:
                             logger.error(f"❌ Error processing speech trigger {trigger_file}: {e}")
                             try:
                                 Path(trigger_file).unlink()
-                            except:
-                                pass
+                            except Exception as e:
+                                logger.warning(f"Failed to cleanup speech trigger file: {e}")
 
                     time.sleep(0.5)  # Check every 500ms
 
