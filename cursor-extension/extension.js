@@ -24,19 +24,21 @@ let currentRecording = null;
 
 function activate(context) {
     console.log('Review Gate V2 extension is now active in Cursor for MCP integration!');
-    
+
     // Create output channel for logging
     outputChannel = vscode.window.createOutputChannel('Review Gate V2 ゲート');
     context.subscriptions.push(outputChannel);
-    
+
     // Silent activation - only log to console, not output channel
-    console.log('Review Gate V2 extension activated for Cursor MCP integration by Lakshman Turlapati');
+    console.log(
+        'Review Gate V2 extension activated for Cursor MCP integration by Lakshman Turlapati'
+    );
 
     // Register command to open Review Gate manually
-    let disposable = vscode.commands.registerCommand('reviewGate.openChat', () => {
+    const disposable = vscode.commands.registerCommand('reviewGate.openChat', () => {
         openReviewGatePopup(context, {
-            message: "Welcome to Review Gate V2! Please provide your review or feedback.",
-            title: "Review Gate"
+            message: 'Welcome to Review Gate V2! Please provide your review or feedback.',
+            title: 'Review Gate'
         });
     });
 
@@ -47,9 +49,11 @@ function activate(context) {
 
     // Start Review Gate integration immediately
     startReviewGateIntegration(context);
-    
+
     // Show activation notification
-    vscode.window.showInformationMessage('Review Gate V2 activated! Use Cmd+Shift+R or wait for MCP tool calls.');
+    vscode.window.showInformationMessage(
+        'Review Gate V2 activated! Use Cmd+Shift+R or wait for MCP tool calls.'
+    );
 }
 
 function logMessage(message) {
@@ -66,50 +70,51 @@ function logUserInput(inputText, eventType = 'MESSAGE', triggerId = null, attach
     const timestamp = new Date().toISOString();
     const logMsg = `[${timestamp}] ${eventType}: ${inputText}`;
     console.log(`REVIEW GATE USER INPUT: ${inputText}`);
-    
+
     if (outputChannel) {
         outputChannel.appendLine(logMsg);
     }
-    
+
     // Write to file for external monitoring
     try {
         const logFile = getTempPath('review_gate_user_inputs.log');
         fs.appendFileSync(logFile, `${logMsg}\n`);
-        
+
         // Write response file for MCP server integration if we have a trigger ID
         if (triggerId && eventType === 'MCP_RESPONSE') {
             // Write multiple response file patterns for better compatibility
             const responsePatterns = [
                 getTempPath(`review_gate_response_${triggerId}.json`),
-                getTempPath('review_gate_response.json'),  // Fallback generic response
-                getTempPath(`mcp_response_${triggerId}.json`),  // Alternative pattern
-                getTempPath('mcp_response.json')  // Generic MCP response
+                getTempPath('review_gate_response.json'), // Fallback generic response
+                getTempPath(`mcp_response_${triggerId}.json`), // Alternative pattern
+                getTempPath('mcp_response.json') // Generic MCP response
             ];
-            
+
             const responseData = {
                 timestamp: timestamp,
                 trigger_id: triggerId,
                 user_input: inputText,
-                response: inputText,  // Also provide as 'response' field
-                message: inputText,   // Also provide as 'message' field
-                attachments: attachments,  // Include image attachments
+                response: inputText, // Also provide as 'response' field
+                message: inputText, // Also provide as 'message' field
+                attachments: attachments, // Include image attachments
                 event_type: eventType,
                 source: 'review_gate_extension'
             };
-            
+
             const responseJson = JSON.stringify(responseData, null, 2);
-            
+
             // Write to all response file patterns
             responsePatterns.forEach(responseFile => {
                 try {
                     fs.writeFileSync(responseFile, responseJson);
                     logMessage(`MCP response written: ${responseFile}`);
                 } catch (writeError) {
-                    logMessage(`Failed to write response file ${responseFile}: ${writeError.message}`);
+                    logMessage(
+                        `Failed to write response file ${responseFile}: ${writeError.message}`
+                    );
                 }
             });
         }
-        
     } catch (error) {
         logMessage(`Could not write to Review Gate log file: ${error.message}`);
     }
@@ -117,15 +122,15 @@ function logUserInput(inputText, eventType = 'MESSAGE', triggerId = null, attach
 
 function startMcpStatusMonitoring(context) {
     // Silent start - no logging to avoid focus stealing
-    
+
     // Check MCP status every 2 seconds
     statusCheckInterval = setInterval(() => {
         checkMcpStatus();
     }, 2000);
-    
+
     // Initial check
     checkMcpStatus();
-    
+
     // Clean up on extension deactivation
     context.subscriptions.push({
         dispose: () => {
@@ -144,11 +149,11 @@ function checkMcpStatus() {
             const stats = fs.statSync(mcpLogPath);
             const now = Date.now();
             const fileAge = now - stats.mtime.getTime();
-            
+
             // Consider MCP active if log file was modified within last 30 seconds
             const wasActive = mcpStatus;
             mcpStatus = fileAge < 30000;
-            
+
             if (wasActive !== mcpStatus) {
                 // Silent status change - only update UI
                 updateChatPanelStatus();
@@ -178,29 +183,29 @@ function updateChatPanelStatus() {
 
 function startReviewGateIntegration(context) {
     // Silent integration start
-    
+
     // Watch for Review Gate trigger file
     const triggerFilePath = getTempPath('review_gate_trigger.json');
-    
+
     // Check for existing trigger file first
     checkTriggerFile(context, triggerFilePath);
-    
+
     // Use a more robust polling approach instead of fs.watchFile
     // fs.watchFile can miss rapid file creation/deletion cycles
     const pollInterval = setInterval(() => {
         // Check main trigger file
         checkTriggerFile(context, triggerFilePath);
-        
+
         // Check backup trigger files
         for (let i = 0; i < 3; i++) {
             const backupTriggerPath = getTempPath(`review_gate_trigger_${i}.json`);
             checkTriggerFile(context, backupTriggerPath);
         }
     }, 250); // Check every 250ms for better performance
-    
+
     // Store the interval for cleanup
     reviewGateWatcher = pollInterval;
-    
+
     // Add to context subscriptions for proper cleanup
     context.subscriptions.push({
         dispose: () => {
@@ -209,14 +214,16 @@ function startReviewGateIntegration(context) {
             }
         }
     });
-    
+
     // Immediate check on startup
     setTimeout(() => {
         checkTriggerFile(context, triggerFilePath);
     }, 100);
-    
+
     // Show notification that we're ready
-    vscode.window.showInformationMessage('Review Gate V2 MCP integration ready! Extension is monitoring for Cursor Agent tool calls...');
+    vscode.window.showInformationMessage(
+        'Review Gate V2 MCP integration ready! Extension is monitoring for Cursor Agent tool calls...'
+    );
 }
 
 function checkTriggerFile(context, filePath) {
@@ -224,24 +231,24 @@ function checkTriggerFile(context, filePath) {
         if (fs.existsSync(filePath)) {
             const data = fs.readFileSync(filePath, 'utf8');
             const triggerData = JSON.parse(data);
-            
+
             // Check if this is for Cursor and Review Gate
             if (triggerData.editor && triggerData.editor !== 'cursor') {
                 return;
             }
-            
+
             if (triggerData.system && triggerData.system !== 'review-gate-v2') {
                 return;
             }
-            
+
             // Only log essential trigger info
             console.log(`Review Gate triggered: ${triggerData.data.tool}`);
-            
+
             // Store current trigger data for response handling
             currentTriggerData = triggerData.data;
-            
+
             handleReviewGateToolCall(context, triggerData.data);
-            
+
             // Clean up trigger file immediately
             try {
                 fs.unlinkSync(filePath);
@@ -251,7 +258,8 @@ function checkTriggerFile(context, filePath) {
             }
         }
     } catch (error) {
-        if (error.code !== 'ENOENT') { // Don't log file not found errors
+        if (error.code !== 'ENOENT') {
+            // Don't log file not found errors
             console.log(`Error reading trigger file: ${error.message}`);
         }
     }
@@ -259,9 +267,9 @@ function checkTriggerFile(context, filePath) {
 
 function handleReviewGateToolCall(context, toolData) {
     // Silent tool call processing
-    
+
     let popupOptions = {};
-    
+
     switch (toolData.tool) {
         case 'review_gate':
             // UNIFIED: New unified tool that handles all modes
@@ -270,9 +278,9 @@ function handleReviewGateToolCall(context, toolData) {
             if (toolData.unified_tool) {
                 modeTitle = `Review Gate V2 ゲート - Unified (${mode})`;
             }
-            
+
             popupOptions = {
-                message: toolData.message || "Please provide your input:",
+                message: toolData.message || 'Please provide your input:',
                 title: toolData.title || modeTitle,
                 autoFocus: true,
                 toolData: toolData,
@@ -280,84 +288,90 @@ function handleReviewGateToolCall(context, toolData) {
                 specialHandling: `unified_${mode}`
             };
             break;
-            
+
         case 'review_gate_chat':
             popupOptions = {
-                message: toolData.message || "Please provide your review or feedback:",
-                title: toolData.title || "Review Gate V2 - ゲート",
+                message: toolData.message || 'Please provide your review or feedback:',
+                title: toolData.title || 'Review Gate V2 - ゲート',
                 autoFocus: true,
                 toolData: toolData,
                 mcpIntegration: true
             };
             break;
-            
+
         case 'quick_review':
             popupOptions = {
-                message: toolData.prompt || "Quick feedback needed:",
-                title: toolData.title || "Review Gate V2 ゲート - Quick Review",
+                message: toolData.prompt || 'Quick feedback needed:',
+                title: toolData.title || 'Review Gate V2 ゲート - Quick Review',
                 autoFocus: true,
                 toolData: toolData,
                 mcpIntegration: true,
                 specialHandling: 'quick_review'
             };
             break;
-            
+
         case 'ingest_text':
             popupOptions = {
                 message: `Cursor Agent received text input and needs your feedback:\n\n**Text Content:** ${toolData.text_content}\n**Source:** ${toolData.source}\n**Context:** ${toolData.context || 'None'}\n**Processing Mode:** ${toolData.processing_mode}\n\nPlease review and provide your feedback:`,
-                title: toolData.title || "Review Gate V2 ゲート - Text Input",
+                title: toolData.title || 'Review Gate V2 ゲート - Text Input',
                 autoFocus: true,
                 toolData: toolData,
                 mcpIntegration: true
             };
             break;
-            
+
         case 'shutdown_mcp':
             popupOptions = {
                 message: `Cursor Agent is requesting to shutdown the MCP server:\n\n**Reason:** ${toolData.reason}\n**Immediate:** ${toolData.immediate ? 'Yes' : 'No'}\n**Cleanup:** ${toolData.cleanup ? 'Yes' : 'No'}\n\nType 'CONFIRM' to proceed with shutdown, or provide alternative instructions:`,
-                title: toolData.title || "Review Gate V2 ゲート - Shutdown Confirmation",
+                title: toolData.title || 'Review Gate V2 ゲート - Shutdown Confirmation',
                 autoFocus: true,
                 toolData: toolData,
                 mcpIntegration: true,
                 specialHandling: 'shutdown_mcp'
             };
             break;
-            
+
         case 'file_review':
             popupOptions = {
-                message: toolData.instruction || "Cursor Agent needs you to select files:",
-                title: toolData.title || "Review Gate V2 ゲート - File Review",
+                message: toolData.instruction || 'Cursor Agent needs you to select files:',
+                title: toolData.title || 'Review Gate V2 ゲート - File Review',
                 autoFocus: true,
                 toolData: toolData,
                 mcpIntegration: true
             };
             break;
-            
+
         default:
             popupOptions = {
-                message: toolData.message || toolData.prompt || toolData.instruction || "Cursor Agent needs your input. Please provide your response:",
-                title: toolData.title || "Review Gate V2 ゲート - General Input",
+                message:
+                    toolData.message ||
+                    toolData.prompt ||
+                    toolData.instruction ||
+                    'Cursor Agent needs your input. Please provide your response:',
+                title: toolData.title || 'Review Gate V2 ゲート - General Input',
                 autoFocus: true,
                 toolData: toolData,
                 mcpIntegration: true
             };
     }
-    
+
     // Add trigger ID to popup options
     popupOptions.triggerId = toolData.trigger_id;
-    
+
     // Force consistent title regardless of tool call
-    popupOptions.title = "Review Gate";
-    
+    popupOptions.title = 'Review Gate';
+
     // Immediately open Review Gate popup when tools are triggered by Cursor Agent
     openReviewGatePopup(context, popupOptions);
-    
+
     // FIXED: Send acknowledgement to MCP server that popup was activated
     sendExtensionAcknowledgement(toolData.trigger_id, toolData.tool);
-    
+
     // Show appropriate notification
     const toolDisplayName = toolData.tool.replace('_', ' ').toUpperCase();
-    vscode.window.showInformationMessage(`Cursor Agent triggered "${toolDisplayName}" - Review Gate popup opened for your input!`);
+    vscode.window.showInformationMessage(
+        `Cursor Agent triggered "${toolDisplayName}" - Review Gate popup opened for your input!`
+    );
 }
 
 function sendExtensionAcknowledgement(triggerId, toolType) {
@@ -371,12 +385,11 @@ function sendExtensionAcknowledgement(triggerId, toolType) {
             extension: 'review-gate-v2',
             popup_activated: true
         };
-        
+
         const ackFile = getTempPath(`review_gate_ack_${triggerId}.json`);
         fs.writeFileSync(ackFile, JSON.stringify(ackData, null, 2));
-        
-        // Silent acknowledgement 
-        
+
+        // Silent acknowledgement
     } catch (error) {
         console.log(`Could not send extension acknowledgement: ${error.message}`);
     }
@@ -384,15 +397,15 @@ function sendExtensionAcknowledgement(triggerId, toolType) {
 
 function openReviewGatePopup(context, options = {}) {
     const {
-        message = "Welcome to Review Gate V2! Please provide your review or feedback.",
-        title = "Review Gate",
+        message = 'Welcome to Review Gate V2! Please provide your review or feedback.',
+        title = 'Review Gate',
         autoFocus = false,
         toolData = null,
         mcpIntegration = false,
         triggerId = null,
         specialHandling = null
     } = options;
-    
+
     // Store trigger ID in current trigger data for use in message handlers
     if (triggerId) {
         currentTriggerData = { ...toolData, trigger_id: triggerId };
@@ -403,8 +416,8 @@ function openReviewGatePopup(context, options = {}) {
     if (chatPanel) {
         chatPanel.reveal(vscode.ViewColumn.One);
         // Always use consistent title
-        chatPanel.title = "Review Gate";
-        
+        chatPanel.title = 'Review Gate';
+
         // Set MCP status to active when revealing panel for new input
         if (mcpIntegration) {
             setTimeout(() => {
@@ -414,10 +427,10 @@ function openReviewGatePopup(context, options = {}) {
                 });
             }, 100);
         }
-        
+
         // Don't send redundant messages to existing panels
         // The initial ready handler will show the message if needed
-        
+
         // Auto-focus if requested
         if (autoFocus) {
             setTimeout(() => {
@@ -426,20 +439,15 @@ function openReviewGatePopup(context, options = {}) {
                 });
             }, 200);
         }
-        
+
         return;
     }
 
     // Create webview panel
-    chatPanel = vscode.window.createWebviewPanel(
-        'reviewGateChat',
-        title,
-        vscode.ViewColumn.One,
-        {
-            enableScripts: true,
-            retainContextWhenHidden: true
-        }
-    );
+    chatPanel = vscode.window.createWebviewPanel('reviewGateChat', title, vscode.ViewColumn.One, {
+        enableScripts: true,
+        retainContextWhenHidden: true
+    });
 
     // Set the HTML content
     chatPanel.webview.html = getReviewGateHTML(title, mcpIntegration);
@@ -448,23 +456,42 @@ function openReviewGatePopup(context, options = {}) {
     chatPanel.webview.onDidReceiveMessage(
         webviewMessage => {
             // Get trigger ID from current trigger data or passed options
-            const currentTriggerId = (currentTriggerData && currentTriggerData.trigger_id) || triggerId;
-            
+            const currentTriggerId =
+                (currentTriggerData && currentTriggerData.trigger_id) || triggerId;
+
             switch (webviewMessage.command) {
                 case 'send':
-                    
                     // Log the user input and write response file for MCP integration
                     const eventType = mcpIntegration ? 'MCP_RESPONSE' : 'REVIEW_SUBMITTED';
-                    logUserInput(webviewMessage.text, eventType, currentTriggerId, webviewMessage.attachments || []);
-                    
-                    handleReviewMessage(webviewMessage.text, webviewMessage.attachments, currentTriggerId, mcpIntegration, specialHandling);
+                    logUserInput(
+                        webviewMessage.text,
+                        eventType,
+                        currentTriggerId,
+                        webviewMessage.attachments || []
+                    );
+
+                    handleReviewMessage(
+                        webviewMessage.text,
+                        webviewMessage.attachments,
+                        currentTriggerId,
+                        mcpIntegration,
+                        specialHandling
+                    );
                     break;
                 case 'attach':
-                    logUserInput('User clicked attachment button', 'ATTACHMENT_CLICK', currentTriggerId);
+                    logUserInput(
+                        'User clicked attachment button',
+                        'ATTACHMENT_CLICK',
+                        currentTriggerId
+                    );
                     handleFileAttachment(currentTriggerId);
                     break;
                 case 'uploadImage':
-                    logUserInput('User clicked image upload button', 'IMAGE_UPLOAD_CLICK', currentTriggerId);
+                    logUserInput(
+                        'User clicked image upload button',
+                        'IMAGE_UPLOAD_CLICK',
+                        currentTriggerId
+                    );
                     handleImageUpload(currentTriggerId);
                     break;
                 case 'startRecording':
@@ -487,7 +514,7 @@ function openReviewGatePopup(context, options = {}) {
                     });
                     // Only send welcome message for manual opens, not MCP tool calls
                     // This prevents duplicate messages from repeated tool calls
-                    if (message && !mcpIntegration && !message.includes("I have completed")) {
+                    if (message && !mcpIntegration && !message.includes('I have completed')) {
                         chatPanel.webview.postMessage({
                             command: 'addMessage',
                             text: message,
@@ -526,7 +553,7 @@ function openReviewGatePopup(context, options = {}) {
     }
 }
 
-function getReviewGateHTML(title = "Review Gate", mcpIntegration = false) {
+function getReviewGateHTML(title = 'Review Gate', mcpIntegration = false) {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1240,25 +1267,25 @@ function getReviewGateHTML(title = "Review Gate", mcpIntegration = false) {
 function handleReviewMessage(text, attachments, triggerId, mcpIntegration, specialHandling) {
     // Funny response templates - randomly rotated
     const funnyResponses = [
-        "Review sent - Hold on to your pants until the review gate is called again! 🎢",
-        "Message delivered! Agent is probably doing agent things now... ⚡",
-        "Your wisdom has been transmitted to the digital overlords! 🤖",
-        "Response launched into the void - expect agent magic soon! ✨",
-        "Review gate closed - Agent is chewing on your input! 🍕",
+        'Review sent - Hold on to your pants until the review gate is called again! 🎢',
+        'Message delivered! Agent is probably doing agent things now... ⚡',
+        'Your wisdom has been transmitted to the digital overlords! 🤖',
+        'Response launched into the void - expect agent magic soon! ✨',
+        'Review gate closed - Agent is chewing on your input! 🍕',
         "Message received and filed under 'Probably Important'! 📁",
         "Your input is now part of the agent's master plan! 🧠",
-        "Review sent - The agent owes you one! 🤝",
+        'Review sent - The agent owes you one! 🤝',
         "Success! Your thoughts are now haunting the agent's dreams! 👻",
-        "Delivered faster than pizza on a Friday night! 🍕"
+        'Delivered faster than pizza on a Friday night! 🍕'
     ];
-    
+
     // Silent message processing
-    
+
     // Handle special cases for different tool types
     if (specialHandling === 'shutdown_mcp') {
         if (text.toUpperCase().includes('CONFIRM') || text.toUpperCase() === 'YES') {
             logUserInput(`SHUTDOWN CONFIRMED: ${text}`, 'SHUTDOWN_CONFIRMED', triggerId);
-            
+
             // Send confirmation response
             if (chatPanel) {
                 setTimeout(() => {
@@ -1267,7 +1294,7 @@ function handleReviewMessage(text, attachments, triggerId, mcpIntegration, speci
                         text: `🛑 SHUTDOWN CONFIRMED: "${text}"\n\nMCP server shutdown has been approved by user.\n\nCursor Agent will proceed with graceful shutdown.`,
                         type: 'system'
                     });
-                    
+
                     // Set MCP status to inactive after shutdown confirmation
                     setTimeout(() => {
                         if (chatPanel) {
@@ -1281,7 +1308,7 @@ function handleReviewMessage(text, attachments, triggerId, mcpIntegration, speci
             }
         } else {
             logUserInput(`SHUTDOWN ALTERNATIVE: ${text}`, 'SHUTDOWN_ALTERNATIVE', triggerId);
-            
+
             // Send alternative instructions response
             if (chatPanel) {
                 setTimeout(() => {
@@ -1290,7 +1317,7 @@ function handleReviewMessage(text, attachments, triggerId, mcpIntegration, speci
                         text: `💡 ALTERNATIVE INSTRUCTIONS: "${text}"\n\nYour instructions have been sent to the Cursor Agent instead of shutdown confirmation.\n\nThe Agent will process your alternative request.`,
                         type: 'system'
                     });
-                    
+
                     // Set MCP status to inactive after alternative instructions
                     setTimeout(() => {
                         if (chatPanel) {
@@ -1305,7 +1332,7 @@ function handleReviewMessage(text, attachments, triggerId, mcpIntegration, speci
         }
     } else if (specialHandling === 'ingest_text') {
         logUserInput(`TEXT FEEDBACK: ${text}`, 'TEXT_FEEDBACK', triggerId);
-        
+
         // Send text feedback response
         if (chatPanel) {
             setTimeout(() => {
@@ -1314,7 +1341,7 @@ function handleReviewMessage(text, attachments, triggerId, mcpIntegration, speci
                     text: `🔄 TEXT INPUT PROCESSED: "${text}"\n\nYour feedback on the ingested text has been sent to the Cursor Agent.\n\nThe Agent will continue processing with your input.`,
                     type: 'system'
                 });
-                
+
                 // Set MCP status to inactive after text feedback
                 setTimeout(() => {
                     if (chatPanel) {
@@ -1329,21 +1356,24 @@ function handleReviewMessage(text, attachments, triggerId, mcpIntegration, speci
     } else {
         // Standard handling for other tools
         // Log to output channel for persistence
-        outputChannel.appendLine(`${mcpIntegration ? 'MCP RESPONSE' : 'REVIEW'} SUBMITTED: ${text}`);
-        
+        outputChannel.appendLine(
+            `${mcpIntegration ? 'MCP RESPONSE' : 'REVIEW'} SUBMITTED: ${text}`
+        );
+
         // Send standard response back to webview
         if (chatPanel) {
             setTimeout(() => {
                 // Pick a random funny response
-                const randomResponse = funnyResponses[Math.floor(Math.random() * funnyResponses.length)];
-                
+                const randomResponse =
+                    funnyResponses[Math.floor(Math.random() * funnyResponses.length)];
+
                 chatPanel.webview.postMessage({
                     command: 'addMessage',
                     text: randomResponse,
                     type: 'system',
-                    plain: true  // Use plain styling for acknowledgments
+                    plain: true // Use plain styling for acknowledgments
                 });
-                
+
                 // Set MCP status to inactive after sending response
                 setTimeout(() => {
                     if (chatPanel) {
@@ -1353,7 +1383,6 @@ function handleReviewMessage(text, attachments, triggerId, mcpIntegration, speci
                         });
                     }
                 }, 1000);
-                
             }, 500);
         }
     }
@@ -1361,84 +1390,90 @@ function handleReviewMessage(text, attachments, triggerId, mcpIntegration, speci
 
 function handleFileAttachment(triggerId) {
     logUserInput('User requested file attachment for review', 'FILE_ATTACHMENT', triggerId);
-    
-    vscode.window.showOpenDialog({
-        canSelectMany: true,
-        openLabel: 'Select file(s) for review',
-        filters: {
-            'All files': ['*']
-        }
-    }).then(fileUris => {
-        if (fileUris && fileUris.length > 0) {
-            const filePaths = fileUris.map(uri => uri.fsPath);
-            const fileNames = filePaths.map(fp => path.basename(fp));
-            
-            logUserInput(`Files selected for review: ${fileNames.join(', ')}`, 'FILE_SELECTED', triggerId);
-            
-            if (chatPanel) {
-                chatPanel.webview.postMessage({
-                    command: 'addMessage',
-                    text: `Files attached for review:\n${fileNames.map(name => '• ' + name).join('\n')}\n\nPaths:\n${filePaths.map(fp => '• ' + fp).join('\n')}`,
-                    type: 'system'
-                });
+
+    vscode.window
+        .showOpenDialog({
+            canSelectMany: true,
+            openLabel: 'Select file(s) for review',
+            filters: {
+                'All files': ['*']
             }
-        } else {
-            logUserInput('No files selected for review', 'FILE_CANCELLED', triggerId);
-        }
-    });
+        })
+        .then(fileUris => {
+            if (fileUris && fileUris.length > 0) {
+                const filePaths = fileUris.map(uri => uri.fsPath);
+                const fileNames = filePaths.map(fp => path.basename(fp));
+
+                logUserInput(
+                    `Files selected for review: ${fileNames.join(', ')}`,
+                    'FILE_SELECTED',
+                    triggerId
+                );
+
+                if (chatPanel) {
+                    chatPanel.webview.postMessage({
+                        command: 'addMessage',
+                        text: `Files attached for review:\n${fileNames.map(name => '• ' + name).join('\n')}\n\nPaths:\n${filePaths.map(fp => '• ' + fp).join('\n')}`,
+                        type: 'system'
+                    });
+                }
+            } else {
+                logUserInput('No files selected for review', 'FILE_CANCELLED', triggerId);
+            }
+        });
 }
 
 function handleImageUpload(triggerId) {
     logUserInput('User requested image upload for review', 'IMAGE_UPLOAD', triggerId);
-    
-    vscode.window.showOpenDialog({
-        canSelectMany: true,
-        openLabel: 'Select image(s) to upload',
-        filters: {
-            'Images': ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']
-        }
-    }).then(fileUris => {
-        if (fileUris && fileUris.length > 0) {
-            fileUris.forEach(fileUri => {
-                const filePath = fileUri.fsPath;
-                const fileName = path.basename(filePath);
-                
-                
-                try {
-                    // Read the image file
-                    const imageBuffer = fs.readFileSync(filePath);
-                    const base64Data = imageBuffer.toString('base64');
-                    const mimeType = getMimeType(fileName);
-                    const dataUrl = `data:${mimeType};base64,${base64Data}`;
-                    
-                    const imageData = {
-                        fileName: fileName,
-                        filePath: filePath,
-                        mimeType: mimeType,
-                        base64Data: base64Data,
-                        dataUrl: dataUrl,
-                        size: imageBuffer.length
-                    };
-                    
-                    logUserInput(`Image uploaded: ${fileName}`, 'IMAGE_UPLOADED', triggerId);
-                    
-                    // Send image data to webview
-                    if (chatPanel) {
-                        chatPanel.webview.postMessage({
-                            command: 'imageUploaded',
-                            imageData: imageData
-                        });
+
+    vscode.window
+        .showOpenDialog({
+            canSelectMany: true,
+            openLabel: 'Select image(s) to upload',
+            filters: {
+                Images: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']
+            }
+        })
+        .then(fileUris => {
+            if (fileUris && fileUris.length > 0) {
+                fileUris.forEach(fileUri => {
+                    const filePath = fileUri.fsPath;
+                    const fileName = path.basename(filePath);
+
+                    try {
+                        // Read the image file
+                        const imageBuffer = fs.readFileSync(filePath);
+                        const base64Data = imageBuffer.toString('base64');
+                        const mimeType = getMimeType(fileName);
+                        const dataUrl = `data:${mimeType};base64,${base64Data}`;
+
+                        const imageData = {
+                            fileName: fileName,
+                            filePath: filePath,
+                            mimeType: mimeType,
+                            base64Data: base64Data,
+                            dataUrl: dataUrl,
+                            size: imageBuffer.length
+                        };
+
+                        logUserInput(`Image uploaded: ${fileName}`, 'IMAGE_UPLOADED', triggerId);
+
+                        // Send image data to webview
+                        if (chatPanel) {
+                            chatPanel.webview.postMessage({
+                                command: 'imageUploaded',
+                                imageData: imageData
+                            });
+                        }
+                    } catch (error) {
+                        console.log(`Error processing image ${fileName}: ${error.message}`);
+                        vscode.window.showErrorMessage(`Failed to process image: ${fileName}`);
                     }
-                    
-                } catch (error) {
-                    console.log(`Error processing image ${fileName}: ${error.message}`);
-                    vscode.window.showErrorMessage(`Failed to process image: ${fileName}`);
-                }
-            });
-        } else {
-            logUserInput('No images selected for upload', 'IMAGE_CANCELLED', triggerId);
-        }
-    });
+                });
+            } else {
+                logUserInput('No images selected for upload', 'IMAGE_CANCELLED', triggerId);
+            }
+        });
 }
 
 function getMimeType(fileName) {
@@ -1457,7 +1492,7 @@ function getMimeType(fileName) {
 async function handleSpeechToText(audioData, triggerId, isFilePath = false) {
     try {
         let tempAudioPath;
-        
+
         if (isFilePath) {
             // Audio data is already a file path
             tempAudioPath = audioData;
@@ -1466,45 +1501,45 @@ async function handleSpeechToText(audioData, triggerId, isFilePath = false) {
             // Convert base64 audio data to buffer (legacy webview approach)
             const base64Data = audioData.split(',')[1];
             const audioBuffer = Buffer.from(base64Data, 'base64');
-            
+
             // Save audio to temp file
             tempAudioPath = getTempPath(`review_gate_audio_${triggerId}_${Date.now()}.wav`);
             require('fs').writeFileSync(tempAudioPath, audioBuffer);
-            
+
             console.log(`Audio saved for transcription: ${tempAudioPath}`);
         }
-        
+
         // Send to MCP server for transcription
         const transcriptionRequest = {
             timestamp: new Date().toISOString(),
-            system: "review-gate-v2",
-            editor: "cursor",
+            system: 'review-gate-v2',
+            editor: 'cursor',
             data: {
-                tool: "speech_to_text",
+                tool: 'speech_to_text',
                 audio_file: tempAudioPath,
                 trigger_id: triggerId,
-                format: "wav"
+                format: 'wav'
             },
             mcp_integration: true
         };
-        
+
         const triggerFile = getTempPath(`review_gate_speech_trigger_${triggerId}.json`);
         require('fs').writeFileSync(triggerFile, JSON.stringify(transcriptionRequest, null, 2));
-        
+
         console.log(`Speech-to-text request sent: ${triggerFile}`);
-        
+
         // Poll for transcription result
         const maxWaitTime = 30000; // 30 seconds
         const pollInterval = 500; // 500ms
         let waitTime = 0;
-        
+
         const pollForResult = setInterval(() => {
             const resultFile = getTempPath(`review_gate_speech_response_${triggerId}.json`);
-            
+
             if (require('fs').existsSync(resultFile)) {
                 try {
                     const result = JSON.parse(require('fs').readFileSync(resultFile, 'utf8'));
-                    
+
                     if (result.transcription) {
                         // Send transcription back to webview
                         if (chatPanel) {
@@ -1513,23 +1548,26 @@ async function handleSpeechToText(audioData, triggerId, isFilePath = false) {
                                 transcription: result.transcription
                             });
                         }
-                        
+
                         console.log(`Speech transcribed: ${result.transcription}`);
-                        logUserInput(`Speech transcribed: ${result.transcription}`, 'SPEECH_TRANSCRIBED', triggerId);
+                        logUserInput(
+                            `Speech transcribed: ${result.transcription}`,
+                            'SPEECH_TRANSCRIBED',
+                            triggerId
+                        );
                     }
-                    
+
                     // Cleanup
                     require('fs').unlinkSync(resultFile);
                     require('fs').unlinkSync(tempAudioPath);
                     require('fs').unlinkSync(triggerFile);
-                    
                 } catch (error) {
                     console.log(`Error reading transcription result: ${error.message}`);
                 }
-                
+
                 clearInterval(pollForResult);
             }
-            
+
             waitTime += pollInterval;
             if (waitTime >= maxWaitTime) {
                 console.log('Speech-to-text timeout');
@@ -1540,7 +1578,7 @@ async function handleSpeechToText(audioData, triggerId, isFilePath = false) {
                     });
                 }
                 clearInterval(pollForResult);
-                
+
                 // Cleanup on timeout
                 try {
                     require('fs').unlinkSync(tempAudioPath);
@@ -1548,7 +1586,6 @@ async function handleSpeechToText(audioData, triggerId, isFilePath = false) {
                 } catch (e) {}
             }
         }, pollInterval);
-        
     } catch (error) {
         console.log(`Speech-to-text error: ${error.message}`);
         if (chatPanel) {
@@ -1574,33 +1611,35 @@ function startNodeRecording(triggerId) {
             }
             return;
         }
-        
+
         const timestamp = Date.now();
         const audioFile = getTempPath(`review_gate_audio_${triggerId}_${timestamp}.wav`);
-        
+
         console.log(`🎤 Starting SoX recording: ${audioFile}`);
-        
+
         // Use sox directly to record audio
         // sox -d -r 16000 -c 1 output.wav (let SoX auto-detect bit depth)
         const soxArgs = [
-            '-d',           // Use default input device (microphone)
-            '-r', '16000',  // Sample rate 16kHz
-            '-c', '1',      // Mono (1 channel)
-            audioFile       // Output file
+            '-d', // Use default input device (microphone)
+            '-r',
+            '16000', // Sample rate 16kHz
+            '-c',
+            '1', // Mono (1 channel)
+            audioFile // Output file
         ];
-        
-        console.log(`🎤 Starting sox with args:`, soxArgs);
-        
+
+        console.log('🎤 Starting sox with args:', soxArgs);
+
         // Spawn sox process
         currentRecording = spawn('sox', soxArgs);
-        
+
         // Store metadata
         currentRecording.audioFile = audioFile;
         currentRecording.triggerId = triggerId;
         currentRecording.startTime = Date.now();
-        
+
         // Handle sox process events
-        currentRecording.on('error', (error) => {
+        currentRecording.on('error', error => {
             console.log(`❌ SoX process error: ${error.message}`);
             if (chatPanel) {
                 chatPanel.webview.postMessage({
@@ -1611,13 +1650,13 @@ function startNodeRecording(triggerId) {
             }
             currentRecording = null;
         });
-        
-        currentRecording.stderr.on('data', (data) => {
+
+        currentRecording.stderr.on('data', data => {
             console.log(`SoX stderr: ${data}`);
         });
-        
+
         console.log(`✅ SoX recording started: PID ${currentRecording.pid}, file: ${audioFile}`);
-        
+
         // Send confirmation to webview that recording has started
         if (chatPanel) {
             chatPanel.webview.postMessage({
@@ -1625,7 +1664,6 @@ function startNodeRecording(triggerId) {
                 audioFile: audioFile
             });
         }
-        
     } catch (error) {
         console.log(`❌ Failed to start SoX recording: ${error.message}`);
         if (chatPanel) {
@@ -1652,29 +1690,31 @@ function stopNodeRecording(triggerId) {
             }
             return;
         }
-        
+
         const audioFile = currentRecording.audioFile;
         const recordingPid = currentRecording.pid;
         console.log(`🛑 Stopping SoX recording: PID ${recordingPid}, file: ${audioFile}`);
-        
+
         // Stop the sox process by sending SIGTERM
         currentRecording.kill('SIGTERM');
-        
+
         // Wait for process to exit and file to be finalized
         currentRecording.on('exit', (code, signal) => {
             console.log(`📝 SoX process exited with code: ${code}, signal: ${signal}`);
-            
+
             // Give a moment for file system to sync
             setTimeout(() => {
                 console.log(`📝 Checking for audio file: ${audioFile}`);
-                
+
                 if (fs.existsSync(audioFile)) {
                     const stats = fs.statSync(audioFile);
                     console.log(`✅ Audio file created: ${audioFile} (${stats.size} bytes)`);
-                    
+
                     // Check minimum file size (more generous for SoX)
                     if (stats.size > 500) {
-                        console.log(`🎤 Audio file ready for transcription: ${audioFile} (${stats.size} bytes)`);
+                        console.log(
+                            `🎤 Audio file ready for transcription: ${audioFile} (${stats.size} bytes)`
+                        );
                         // Send to MCP server for transcription
                         handleSpeechToText(audioFile, triggerId, true);
                     } else {
@@ -1703,11 +1743,11 @@ function stopNodeRecording(triggerId) {
                         });
                     }
                 }
-                
+
                 currentRecording = null;
             }, 1000); // Wait 1 second for file system sync
         });
-        
+
         // Set a timeout in case the process doesn't exit gracefully
         setTimeout(() => {
             if (currentRecording && currentRecording.pid) {
@@ -1720,7 +1760,6 @@ function stopNodeRecording(triggerId) {
                 currentRecording = null;
             }
         }, 3000);
-        
     } catch (error) {
         console.log(`❌ Failed to stop SoX recording: ${error.message}`);
         currentRecording = null;
@@ -1736,15 +1775,15 @@ function stopNodeRecording(triggerId) {
 
 function deactivate() {
     // Silent deactivation
-    
+
     if (reviewGateWatcher) {
         clearInterval(reviewGateWatcher);
     }
-    
+
     if (statusCheckInterval) {
         clearInterval(statusCheckInterval);
     }
-    
+
     if (outputChannel) {
         outputChannel.dispose();
     }
@@ -1753,4 +1792,4 @@ function deactivate() {
 module.exports = {
     activate,
     deactivate
-}; 
+};

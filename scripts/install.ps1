@@ -121,12 +121,12 @@ if (Test-Path $requirementsSrc) {
 # Create Python virtual environment
 Write-ColorOutput "🐍 Creating Python virtual environment..." "Yellow"
 Set-Location $ReviewGateDir
-& $pythonCmd -m venv venv
+& $pythonCmd -m venv .venv
 
 # Activate virtual environment and install dependencies
 Write-ColorOutput "📦 Installing Python dependencies..." "Yellow"
-$venvActivate = Join-Path $ReviewGateDir "venv\Scripts\Activate.ps1"
-$venvPython = Join-Path $ReviewGateDir "venv\Scripts\python.exe"
+$venvActivate = Join-Path $ReviewGateDir ".venv\Scripts\Activate.ps1"
+$venvPython = Join-Path $ReviewGateDir ".venv\Scripts\python.exe"
 
 if (Test-Path $venvActivate) {
     & $venvActivate
@@ -332,7 +332,7 @@ Write-ColorOutput "✨ Enjoy your voice-activated Review Gate! ✨" "Green"
 # Final verification
 Write-ColorOutput "🔍 Final verification..." "Yellow"
 $mcpServerFile = Join-Path $ReviewGateDir "review_gate_v2_mcp.py"
-$venvDir = Join-Path $ReviewGateDir "venv"
+$venvDir = Join-Path $ReviewGateDir ".venv"
 
 if ((Test-Path $mcpServerFile) -and (Test-Path $CursorMcpFile) -and (Test-Path $venvDir)) {
     Write-ColorOutput "✅ All components installed successfully" "Green"

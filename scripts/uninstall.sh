@@ -37,9 +37,9 @@ CURSOR_MCP_FILE="$HOME/.cursor/mcp.json"
 if [[ -f "$CURSOR_MCP_FILE" ]]; then
     # Create backup
     cp "$CURSOR_MCP_FILE" "$CURSOR_MCP_FILE.backup"
-    
+
     # Remove review-gate-v2 entry (simple approach - remove entire config)
-    echo '{"mcpServers":{}}' > "$CURSOR_MCP_FILE"
+    echo '{"mcpServers":{}}' >"$CURSOR_MCP_FILE"
     echo -e "${GREEN}✅ Removed MCP configuration (backup created)${NC}"
 fi
 

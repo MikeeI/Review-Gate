@@ -1,28 +1,36 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this
+repository.
 
 ## Project Overview
 
-Review Gate V2 is a Cursor IDE enhancement that creates an interactive popup system for extended AI conversations. It leverages the Model Context Protocol (MCP) to enable multi-modal interactions including text, voice commands (speech-to-text), and image uploads within Cursor IDE sessions.
+Review Gate V2 is a Cursor IDE enhancement that creates an interactive popup system for extended AI
+conversations. It leverages the Model Context Protocol (MCP) to enable multi-modal interactions
+including text, voice commands (speech-to-text), and image uploads within Cursor IDE sessions.
 
 ## Core Architecture
 
 ### MCP Server (`review_gate_v2_mcp.py`)
+
 - Python-based MCP server that handles communication between Cursor and the popup interface
 - Implements speech-to-text using Faster-Whisper for local voice processing
 - Manages file-based communication protocol for reliability
 - Runs as a standalone process with specific environment variables
 
 ### Cursor Extension (`cursor-extension/`)
+
 - VSCode extension that creates the popup interface in Cursor
 - Handles multimodal inputs: text, images, and voice recording
 - Uses cross-platform file watching to communicate with MCP server
 - Built as a `.vsix` package for distribution
 
 ### Installation Scripts (`scripts/`)
-- Platform-specific installers: `scripts/install.sh` (macOS/Linux), `scripts/install.ps1` and `scripts/install.bat` (Windows)
-- Comprehensive uninstall scripts: `scripts/uninstall.sh`, `scripts/uninstall.ps1`, `scripts/uninstall.bat`
+
+- Platform-specific installers: `scripts/install.sh` (macOS/Linux), `scripts/install.ps1` and
+  `scripts/install.bat` (Windows)
+- Comprehensive uninstall scripts: `scripts/uninstall.sh`, `scripts/uninstall.ps1`,
+  `scripts/uninstall.bat`
 - Automated dependency management including Python packages, SoX audio, and package managers
 - Global installation in `~/cursor-extensions/review-gate-v2/` or Windows equivalent
 - Linux-specific documentation in `documentation/Installation-Linux.md`
@@ -30,6 +38,7 @@ Review Gate V2 is a Cursor IDE enhancement that creates an interactive popup sys
 ## Common Development Commands
 
 ### Package Management
+
 ```bash
 # Install dependencies (prefer pnpm)
 pnpm install
@@ -41,6 +50,7 @@ pip install -r requirements_simple.txt
 ```
 
 ### Build System
+
 ```bash
 # Use the comprehensive build script
 cd cursor-extension/
@@ -53,6 +63,7 @@ cd cursor-extension/
 ```
 
 ### Linting and Formatting
+
 ```bash
 # JavaScript linting (ESLint)
 npm run lint            # Root project
@@ -69,6 +80,7 @@ npm run lint:all
 ```
 
 ### MCP Server Development
+
 ```bash
 # Run MCP server directly for testing
 python review_gate_v2_mcp.py
@@ -82,6 +94,7 @@ sox -d -r 16000 -c 1 test.wav trim 0 3 && rm test.wav
 ```
 
 ### Extension Development
+
 ```bash
 # Navigate to extension directory
 cd cursor-extension/
@@ -102,6 +115,7 @@ pnpm run version:major  # Bump major version
 ```
 
 ### Installation Testing
+
 ```bash
 # Test automated installation
 ./scripts/install.sh     # macOS/Linux
@@ -121,18 +135,21 @@ cat %USERPROFILE%\.cursor\mcp.json  # Windows
 ## Platform-Specific Considerations
 
 ### macOS
+
 - Fully tested and supported
 - Uses Homebrew for dependency management
 - SoX audio system for speech processing
 - Installation path: `~/cursor-extensions/review-gate-v2/`
 
 ### Linux
+
 - Comprehensive Ubuntu/Debian support with apt-get package manager
 - Automated SoX installation and audio system configuration
 - Detailed installation guide in `documentation/Installation-Linux.md`
 - Same installation patterns as macOS with Linux-specific optimizations
 
 ### Windows
+
 - Limited testing, may need manual adjustments
 - Uses Chocolatey for package management when available
 - PowerShell and Batch installer variants
@@ -141,24 +158,27 @@ cat %USERPROFILE%\.cursor\mcp.json  # Windows
 ## Key Configuration Files
 
 ### `mcp.json` Structure
+
 ```json
 {
-  "mcpServers": {
-    "review-gate-v2": {
-      "command": "/path/to/python",
-      "args": ["/path/to/review_gate_v2_mcp.py"],
-      "env": {
-        "PYTHONPATH": "/path/to/extension",
-        "PYTHONUNBUFFERED": "1",
-        "REVIEW_GATE_MODE": "cursor_integration"
-      }
+    "mcpServers": {
+        "review-gate-v2": {
+            "command": "/path/to/python",
+            "args": ["/path/to/review_gate_v2_mcp.py"],
+            "env": {
+                "PYTHONPATH": "/path/to/extension",
+                "PYTHONUNBUFFERED": "1",
+                "REVIEW_GATE_MODE": "cursor_integration"
+            }
+        }
     }
-  }
 }
 ```
 
 ### `ReviewGateV2.mdc` - The Core Rule
+
 This file contains the AI behavior rules that must be copied to Cursor's settings. It defines:
+
 - Phase 1: Primary task execution
 - Phase 2: Mandatory MCP tool activation
 - Phase 3: Interactive review loop processing
@@ -166,24 +186,27 @@ This file contains the AI behavior rules that must be copied to Cursor's setting
 ### Code Style Configuration
 
 #### `.prettierrc` - Formatting Standards
+
 ```json
 {
-  "printWidth": 100,
-  "tabWidth": 4,
-  "useTabs": false,
-  "semi": true,
-  "singleQuote": true,
-  "trailingComma": "none"
+    "printWidth": 100,
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "none"
 }
 ```
 
 #### `eslint.config.js` - JavaScript Linting
+
 - ECMAScript 2022 support
 - Module-based configuration
 - Single quotes, semicolons required
 - Console statements allowed
 
 #### `pnpm-workspace.yaml` - Package Management
+
 - Workspace configuration for extension development
 - Shared dependency catalog
 - VSCode extension tooling integration
@@ -191,6 +214,7 @@ This file contains the AI behavior rules that must be copied to Cursor's setting
 ## Critical Dependencies
 
 ### Python Packages (requirements_simple.txt)
+
 - `mcp>=1.9.2` - Model Context Protocol implementation
 - `faster-whisper>=1.0.0` - Local speech-to-text processing
 - `Pillow>=10.0.0` - Image processing for multimodal inputs
@@ -198,6 +222,7 @@ This file contains the AI behavior rules that must be copied to Cursor's setting
 - `asyncio` - Asynchronous I/O support
 
 ### System Dependencies
+
 - **SoX**: Audio processing for speech-to-text functionality
 - **Python 3.8+**: Required for MCP server
 - **Node.js**: For extension development and linting
@@ -210,6 +235,7 @@ This file contains the AI behavior rules that must be copied to Cursor's setting
 ## File Communication Protocol
 
 The system uses file-based communication between MCP server and Cursor extension:
+
 - Trigger files: `/tmp/review_gate_trigger_*.json` (macOS/Linux)
 - Response files: `/tmp/review_gate_response_*.json`
 - Windows uses system temp directory equivalent
@@ -217,6 +243,7 @@ The system uses file-based communication between MCP server and Cursor extension
 ## Speech Processing
 
 Local Faster-Whisper implementation:
+
 - No cloud dependencies for privacy
 - Supports WAV format at 16kHz sample rate
 - Cross-platform recording using SoX
@@ -248,6 +275,7 @@ project-cursor-enhancer/
 ## Development Workflow
 
 ### Quick Development Cycle
+
 ```bash
 # Full development build and install
 cd cursor-extension/
@@ -258,6 +286,7 @@ cd cursor-extension/
 ```
 
 ### Release Preparation
+
 ```bash
 # Lint and format all code
 npm run lint:all

@@ -340,9 +340,6 @@ dist/
 *.tar.gz
 *.rar
 *.7z
-*.claude 
-*CLAUDE.md
-*.cursor
 # Compiled files
 *.o
 *.a
@@ -395,3 +392,5 @@ $RECYCLE.BIN/
 # Network shortcuts
 *.url
 *.lnk
+
+*.vsix  

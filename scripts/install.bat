@@ -115,7 +115,7 @@ if exist "%SCRIPT_DIR%\requirements_simple.txt" (
 REM Create Python virtual environment
 echo 🐍 Creating Python virtual environment...
 cd /d "!REVIEW_GATE_DIR!"
-!PYTHON_CMD! -m venv venv
+!PYTHON_CMD! -m venv .venv
 if errorlevel 1 (
     echo ❌ Failed to create virtual environment
     pause
@@ -124,7 +124,7 @@ if errorlevel 1 (
 
 REM Activate virtual environment and install dependencies
 echo 📦 Installing Python dependencies...
-call "venv\Scripts\activate.bat"
+call ".venv\Scripts\activate.bat"
 python -m pip install --upgrade pip
 python -m pip install -r requirements_simple.txt
 call deactivate
@@ -171,7 +171,7 @@ echo     print('📝 Creating new MCP configuration file') >> temp_mcp_config.py
 echo. >> temp_mcp_config.py
 echo # Add Review Gate V2 server >> temp_mcp_config.py
 echo existing_servers['review-gate-v2'] = { >> temp_mcp_config.py
-echo     'command': os.path.join(review_gate_dir, 'venv', 'Scripts', 'python.exe'), >> temp_mcp_config.py
+echo     'command': os.path.join(review_gate_dir, '.venv', 'Scripts', 'python.exe'), >> temp_mcp_config.py
 echo     'args': [os.path.join(review_gate_dir, 'review_gate_v2_mcp.py')], >> temp_mcp_config.py
 echo     'env': { >> temp_mcp_config.py
 echo         'PYTHONPATH': review_gate_dir, >> temp_mcp_config.py
@@ -301,7 +301,7 @@ REM Final verification
 echo 🔍 Final verification...
 if exist "!REVIEW_GATE_DIR!\review_gate_v2_mcp.py" (
     if exist "!CURSOR_MCP_FILE!" (
-        if exist "!REVIEW_GATE_DIR!\venv" (
+        if exist "!REVIEW_GATE_DIR!\.venv" (
             echo ✅ All components installed successfully
             pause
             exit /b 0
