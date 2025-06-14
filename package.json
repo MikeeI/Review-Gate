@@ -1,8 +1,8 @@
 {
-    "name": "default-husky-setup",
-    "version": "1.0.0",
-    "description": "A web archiving tool that uses the Internet Archive's Wayback Machine API to preserve websites. Built with the Carmack development system for clean, unified architecture.",
-    "main": "index.js",
+    "name": "project-cursor-enhancer",
+    "version": "3.0.0",
+    "description": "Cursor Enhancer - Advanced MCP server with interactive popup integration for Cursor IDE. Provides enhanced AI agent communication through text and image inputs.",
+    "main": "cursor_enhancer_mcp.py",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "prepare": "husky",
@@ -10,8 +10,16 @@
         "lint:py": "python -m ruff check --fix .",
         "lint:all": "npm run lint && npm run lint:py"
     },
-    "keywords": [],
-    "author": "",
+    "keywords": [
+        "cursor",
+        "ai",
+        "mcp",
+        "popup",
+        "ide",
+        "enhancer",
+        "agent"
+    ],
+    "author": "Lakshman Turlapati",
     "license": "ISC",
     "devDependencies": {
         "eslint": "^9.28.0",
@@ -19,13 +27,5 @@
         "lint-staged": "^16.1.0",
         "prettier": "^3.5.3"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/MikeeI/project_webarchiver.git"
-    },
-    "type": "module",
-    "bugs": {
-        "url": "https://github.com/MikeeI/project_webarchiver/issues"
-    },
-    "homepage": "https://github.com/MikeeI/project_webarchiver#readme"
+    "type": "module"
 }
