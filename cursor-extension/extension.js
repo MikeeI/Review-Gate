@@ -4,14 +4,9 @@ const path = require('path');
 const os = require('os');
 const { spawn } = require('child_process');
 
-// Cross-platform temp directory helper
+// Unix-like temp directory helper (macOS and Linux only)
 function getTempPath(filename) {
-    // Use /tmp/ for macOS and Linux, system temp for Windows
-    if (process.platform === 'win32') {
-        return path.join(os.tmpdir(), filename);
-    } else {
-        return path.join('/tmp', filename);
-    }
+    return path.join('/tmp', filename);
 }
 
 let chatPanel = null;
@@ -52,7 +47,7 @@ function activate(context) {
 
     // Show activation notification
     vscode.window.showInformationMessage(
-        'Review Gate V2 activated! Use Cmd+Shift+R or wait for MCP tool calls.'
+        'Review Gate V2 activated! Use Cmd+Shift+R (macOS) or Ctrl+Shift+R (Linux) to open manually.'
     );
 }
 

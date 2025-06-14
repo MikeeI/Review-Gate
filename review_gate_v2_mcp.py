@@ -46,24 +46,19 @@ from mcp.types import (
 )
 
 
-# Cross-platform temp directory helper
+# Unix-like temp directory helper (macOS and Linux only)
 def get_temp_path(filename: str) -> str:
-    """Get cross-platform temporary file path"""
-    # Use /tmp/ for macOS and Linux, system temp for Windows
-    if os.name == "nt":  # Windows
-        temp_dir = tempfile.gettempdir()
-    else:  # macOS and Linux
-        temp_dir = "/tmp"
-    return os.path.join(temp_dir, filename)
+    """Get temporary file path for Unix-like systems"""
+    return os.path.join("/tmp", filename)
 
 
 # Configure logging with immediate flush
 log_file_path = get_temp_path("review_gate_v2.log")
 
-# Create handlers separately to handle Windows file issues
+# Create logging handlers
 handlers = []
 try:
-    # File handler - may fail on Windows if file is locked
+    # File handler for Unix systems
     file_handler = logging.FileHandler(log_file_path, mode="a", encoding="utf-8")
     file_handler.setLevel(logging.INFO)
     handlers.append(file_handler)

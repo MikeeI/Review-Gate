@@ -38,13 +38,13 @@ cat /proc/asound/version
 ```bash
 # Clone the repository
 git clone https://github.com/LakshmanTurlapati/Review-Gate.git
-cd Review-Gate/V2
+cd Review-Gate
 
 # Make install script executable
-chmod +x install.sh
+chmod +x scripts/install.sh
 
 # Run the installer
-./install.sh
+./scripts/install.sh
 ```
 
 The automated installer handles:
@@ -109,8 +109,8 @@ chmod 755 ~/cursor-extensions/review-gate-v2
 
 ```bash
 # Copy MCP server files (adjust path to your clone)
-cp /path/to/Review-Gate/V2/review_gate_v2_mcp.py .
-cp /path/to/Review-Gate/V2/requirements_simple.txt .
+cp /path/to/Review-Gate/review_gate_v2_mcp.py .
+cp /path/to/Review-Gate/requirements_simple.txt .
 
 # Create Python virtual environment
 python3 -m venv .venv
@@ -168,7 +168,7 @@ python3 -m json.tool ~/.cursor/mcp.json > /dev/null && echo "✅ MCP config is v
 
 ```bash
 # Copy extension file (adjust path to your clone)
-cp /path/to/Review-Gate/V2/cursor-extension/review-gate-v2-2.6.4.vsix ~/cursor-extensions/review-gate-v2/
+cp /path/to/Review-Gate/cursor-extension/dist/review-gate-v2-3.0.0.vsix ~/cursor-extensions/review-gate-v2/
 ```
 
 **Manual Extension Installation:**
@@ -176,7 +176,7 @@ cp /path/to/Review-Gate/V2/cursor-extension/review-gate-v2-2.6.4.vsix ~/cursor-e
 1. Open Cursor IDE
 2. Press `Ctrl+Shift+P` (Linux shortcut)
 3. Type "Extensions: Install from VSIX"
-4. Select: `~/cursor-extensions/review-gate-v2/review-gate-v2-2.6.4.vsix`
+4. Select: `~/cursor-extensions/review-gate-v2/review-gate-v2-3.0.0.vsix`
 5. Restart Cursor when prompted
 
 ### Step 7: Install Review Gate Rule
@@ -186,7 +186,7 @@ cp /path/to/Review-Gate/V2/cursor-extension/review-gate-v2-2.6.4.vsix ~/cursor-e
 mkdir -p ~/.config/Cursor/User/rules
 
 # Copy the Review Gate rule
-cp /path/to/Review-Gate/V2/ReviewGateV2.mdc ~/.config/Cursor/User/rules/
+cp /path/to/Review-Gate/ReviewGateV2.mdc ~/.config/Cursor/User/rules/
 
 # Verify rule file
 ls -la ~/.config/Cursor/User/rules/ReviewGateV2.mdc

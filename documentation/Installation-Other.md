@@ -33,13 +33,13 @@ popup dialogs. This guide provides both automated and manual installation method
 ```bash
 # Clone the repository
 git clone https://github.com/LakshmanTurlapati/Review-Gate.git
-cd Review-Gate/V2
+cd Review-Gate
 
 # Make installer executable
-chmod +x install.sh
+chmod +x scripts/install.sh
 
 # Run installer
-./install.sh
+./scripts/install.sh
 ```
 
 ### Windows PowerShell
@@ -47,13 +47,13 @@ chmod +x install.sh
 ```powershell
 # Clone the repository
 git clone https://github.com/LakshmanTurlapati/Review-Gate.git
-cd Review-Gate/V2
+cd Review-Gate
 
 # Enable script execution
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 # Run installer
-.\install.ps1
+.\scripts\install.ps1
 ```
 
 ### Windows Command Prompt
@@ -61,10 +61,10 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```cmd
 # Clone the repository
 git clone https://github.com/LakshmanTurlapati/Review-Gate.git
-cd Review-Gate\V2
+cd Review-Gate
 
 # Run installer
-install.bat
+scripts\install.bat
 ```
 
 ## Manual Installation
@@ -89,11 +89,11 @@ cd %USERPROFILE%\cursor-extensions\review-gate-v2
 
 ### Step 2: Copy Required Files
 
-Copy these files from the downloaded Review-Gate/V2 folder to your installation directory:
+Copy these files from the downloaded Review-Gate folder to your installation directory:
 
 - `review_gate_v2_mcp.py` - The MCP server
 - `requirements_simple.txt` - Python dependencies
-- `cursor-extension/review-gate-v2-2.6.4.vsix` - Cursor extension
+- `cursor-extension/dist/review-gate-v2-3.0.0.vsix` - Cursor extension
 
 ### Step 3: Set Up Python Environment
 
@@ -210,7 +210,7 @@ Add this configuration (replace paths with your actual paths):
 2. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)
 3. Type "Extensions: Install from VSIX"
 4. Navigate to your installation directory
-5. Select `review-gate-v2-2.6.4.vsix`
+5. Select `review-gate-v2-3.0.0.vsix`
 6. Restart Cursor when prompted
 
 ### Step 7: Verify Installation
@@ -378,7 +378,7 @@ After installation, files should be in these locations:
 ~/cursor-extensions/review-gate-v2/
   - review_gate_v2_mcp.py
   - requirements_simple.txt
-  - review-gate-v2-2.6.4.vsix
+  - review-gate-v2-3.0.0.vsix
   - .venv/
 
 ~/.cursor/
@@ -394,7 +394,7 @@ Log file: /tmp/review_gate_v2.log
 %USERPROFILE%\cursor-extensions\review-gate-v2\
   - review_gate_v2_mcp.py
   - requirements_simple.txt
-  - review-gate-v2-2.6.4.vsix
+  - review-gate-v2-3.0.0.vsix
   - .venv\
 
 %USERPROFILE%\.cursor\
@@ -411,16 +411,16 @@ Log file: %TEMP%\review_gate_v2.log
 **macOS/Linux:**
 
 ```bash
-cd Review-Gate/V2
-chmod +x uninstall.sh
-./uninstall.sh
+cd Review-Gate
+chmod +x scripts/uninstall.sh
+./scripts/uninstall.sh
 ```
 
 **Windows:**
 
 ```cmd
-cd Review-Gate\V2
-uninstall.bat
+cd Review-Gate
+scripts\uninstall.bat
 ```
 
 ### Manual Uninstall

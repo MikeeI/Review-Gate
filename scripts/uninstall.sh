@@ -44,9 +44,14 @@ if [[ -f "$CURSOR_MCP_FILE" ]]; then
 fi
 
 # Remove global rule
-CURSOR_RULES_DIR="$HOME/Library/Application Support/Cursor/User/rules"
-if [[ -f "$CURSOR_RULES_DIR/ReviewGate.mdc" ]]; then
-    rm "$CURSOR_RULES_DIR/ReviewGate.mdc"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    CURSOR_RULES_DIR="$HOME/Library/Application Support/Cursor/User/rules"
+else
+    CURSOR_RULES_DIR="$HOME/.config/Cursor/User/rules"
+fi
+
+if [[ -f "$CURSOR_RULES_DIR/ReviewGateV2.mdc" ]]; then
+    rm "$CURSOR_RULES_DIR/ReviewGateV2.mdc"
     echo -e "${GREEN}✅ Removed global rule${NC}"
 fi
 

@@ -1,7 +1,7 @@
 {
     "mcpServers": {
         "review-gate-v2": {
-            "command": "/Users/YOUR_USERNAME/cursor-extensions/review-gate-v2/venv/bin/python",
+            "command": "/Users/YOUR_USERNAME/cursor-extensions/review-gate-v2/.venv/bin/python",
             "args": ["/Users/YOUR_USERNAME/cursor-extensions/review-gate-v2/review_gate_v2_mcp.py"],
             "env": {
                 "PYTHONPATH": "/Users/YOUR_USERNAME/cursor-extensions/review-gate-v2",
