@@ -46,9 +46,9 @@ from mcp.types import (
 )
 
 
-# Unix-like temp directory helper (macOS and Linux only)
+# Linux temp directory helper
 def get_temp_path(filename: str) -> str:
-    """Get temporary file path for Unix-like systems"""
+    """Get temporary file path for Linux systems"""
     return os.path.join("/tmp", filename)
 
 
@@ -327,9 +327,9 @@ class ReviewGateServer:
 
         # Check all possible response file patterns
         response_patterns = [
-            os.path.join(tempfile.gettempdir(), "review_gate_response_*.json"),
+            "/tmp/review_gate_response_*.json",
             get_temp_path("review_gate_response.json"),
-            os.path.join(tempfile.gettempdir(), "mcp_response_*.json"),
+            "/tmp/mcp_response_*.json",
             get_temp_path("mcp_response.json"),
         ]
 
@@ -912,7 +912,7 @@ class ReviewGateServer:
             while not self.shutdown_requested:
                 try:
                     # Look for speech trigger files
-                    speech_triggers = glob.glob(os.path.join(tempfile.gettempdir(), "review_gate_speech_trigger_*.json"))
+                    speech_triggers = glob.glob("/tmp/review_gate_speech_trigger_*.json")
 
                     for trigger_file in speech_triggers:
                         try:
@@ -1015,8 +1015,7 @@ async def main():
     """Main entry point for Review Gate v2 with immediate activation"""
     logger.info("🎬 STARTING Review Gate v2 MCP Server...")
     logger.info(f"Python version: {sys.version}")
-    logger.info(f"Platform: {sys.platform}")
-    logger.info(f"OS name: {os.name}")
+    logger.info(f"Platform: Linux")
     logger.info(f"Working directory: {os.getcwd()}")
 
     try:

@@ -1,12 +1,14 @@
 {
     "mcpServers": {
-        "review-gate-v2": {
-            "command": "/Users/YOUR_USERNAME/cursor-extensions/review-gate-v2/.venv/bin/python",
-            "args": ["/Users/YOUR_USERNAME/cursor-extensions/review-gate-v2/review_gate_v2_mcp.py"],
+        "cursor-enhancer": {
+            "command": "/Users/YOUR_USERNAME/cursor-extensions/cursor-enhancer/.venv/bin/python",
+            "args": [
+                "/Users/YOUR_USERNAME/cursor-extensions/cursor-enhancer/cursor_enhancer_mcp.py"
+            ],
             "env": {
-                "PYTHONPATH": "/Users/YOUR_USERNAME/cursor-extensions/review-gate-v2",
+                "PYTHONPATH": "/Users/YOUR_USERNAME/cursor-extensions/cursor-enhancer",
                 "PYTHONUNBUFFERED": "1",
-                "REVIEW_GATE_MODE": "cursor_integration"
+                "CURSOR_ENHANCER_MODE": "cursor_integration"
             }
         }
     }

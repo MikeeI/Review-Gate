@@ -1,7 +1,7 @@
 {
-    "name": "review-gate-v2",
-    "displayName": "Review Gate V2",
-    "description": "Interactive AI review popup with voice commands and image uploads for Cursor IDE",
+    "name": "cursor-enhancer",
+    "displayName": "Cursor Enhancer",
+    "description": "Interactive AI enhanced Cursor IDE integration with popup dialogs, voice commands and image uploads",
     "version": "3.0.0",
     "author": "Lakshman Turlapati",
     "publisher": "LakshmanTurlapati",
@@ -26,20 +26,20 @@
     },
     "activationEvents": [
         "onStartupFinished",
-        "onCommand:reviewGate.openChat"
+        "onCommand:cursorEnhancer.openChat"
     ],
     "main": "./extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "reviewGate.openChat",
-                "title": "Open Review Gate V2",
-                "category": "Review Gate"
+                "command": "cursorEnhancer.openChat",
+                "title": "Open Cursor Enhancer",
+                "category": "Cursor Enhancer"
             }
         ],
         "keybindings": [
             {
-                "command": "reviewGate.openChat",
+                "command": "cursorEnhancer.openChat",
                 "key": "cmd+shift+r",
                 "mac": "cmd+shift+r",
                 "win": "ctrl+shift+r",
@@ -52,8 +52,8 @@
         "compile": "echo 'No compilation needed for this extension'",
         "package": "vsce package --out ./dist/ --no-dependencies",
         "package:dev": "vsce package --pre-release --out ./dist/ --no-dependencies",
-        "install:local": "code --install-extension ./dist/review-gate-v2-*.vsix",
-        "install:cursor": "cursor --install-extension ./dist/review-gate-v2-*.vsix",
+        "install:local": "code --install-extension ./dist/cursor-enhancer-*.vsix",
+        "install:cursor": "cursor --install-extension ./dist/cursor-enhancer-*.vsix",
         "clean": "rimraf ./dist",
         "build": "npm run clean && npm run package",
         "build:dev": "npm run clean && npm run package:dev",

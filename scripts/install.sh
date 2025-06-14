@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Review Gate V2 - One-Click Installation Script
+# Cursor Enhancer - One-Click Installation Script
 # Author: Lakshman Turlapati
-# This script installs Review Gate V2 globally for Cursor IDE
+# This script installs Cursor Enhancer globally for Cursor IDE
 
 set -e # Exit on any error
 
@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-echo -e "${BLUE}🚀 Review Gate V2 - One-Click Installation${NC}"
+echo -e "${BLUE}🚀 Cursor Enhancer - One-Click Installation${NC}"
 echo -e "${BLUE}===========================================${NC}"
 echo ""
 
@@ -26,41 +26,13 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     OS="linux"
     PACKAGE_MANAGER="apt-get"
     INSTALL_CMD="sudo $PACKAGE_MANAGER install -y"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    OS="macos"
-    PACKAGE_MANAGER="brew"
-    INSTALL_CMD="$PACKAGE_MANAGER install"
 else
     echo -e "${YELLOW}⚠️ Unsupported operating system: $OSTYPE${NC}"
-    echo -e "${YELLOW}💡 This script is designed for Linux and macOS${NC}"
+    echo -e "${YELLOW}💡 This script is designed for Linux Ubuntu systems only${NC}"
     exit 1
 fi
 
 echo -e "${GREEN}✓ Detected OS: $OS${NC}"
-
-# Only install Homebrew on macOS
-if [[ "$OS" == "macos" ]]; then
-    if ! command -v brew &>/dev/null; then
-        echo -e "${YELLOW}📦 Installing Homebrew (macOS package manager)...${NC}"
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    else
-        echo -e "${GREEN}✅ Homebrew already installed${NC}"
-    fi
-fi
-
-# Install SoX for speech-to-text
-echo -e "${YELLOW}🎤 Installing SoX for speech-to-text...${NC}"
-if ! command -v sox &>/dev/null; then
-    if [[ "$OS" == "linux" ]]; then
-        sudo apt-get update
-        $INSTALL_CMD sox
-    else
-        $INSTALL_CMD sox
-    fi
-    echo -e "${GREEN}✅ SoX installed successfully${NC}"
-else
-    echo -e "${GREEN}✅ SoX already installed${NC}"
-fi
 
 # Check if Python 3 is available
 if ! command -v python3 &>/dev/null; then
@@ -73,19 +45,19 @@ fi
 
 # Create global Cursor extensions directory
 CURSOR_EXTENSIONS_DIR="$HOME/cursor-extensions"
-REVIEW_GATE_DIR="$CURSOR_EXTENSIONS_DIR/review-gate-v2"
+CURSOR_ENHANCER_DIR="$CURSOR_EXTENSIONS_DIR/cursor-enhancer"
 
 echo -e "${YELLOW}📁 Creating global installation directory...${NC}"
-mkdir -p "$REVIEW_GATE_DIR"
+mkdir -p "$CURSOR_ENHANCER_DIR"
 
 # Copy MCP server files
 echo -e "${YELLOW}📋 Copying MCP server files...${NC}"
-cp "$PROJECT_ROOT/review_gate_v2_mcp.py" "$REVIEW_GATE_DIR/"
-cp "$PROJECT_ROOT/requirements_simple.txt" "$REVIEW_GATE_DIR/"
+cp "$PROJECT_ROOT/cursor_enhancer_mcp.py" "$CURSOR_ENHANCER_DIR/"
+cp "$PROJECT_ROOT/requirements_simple.txt" "$CURSOR_ENHANCER_DIR/"
 
 # Create Python virtual environment
 echo -e "${YELLOW}🐍 Creating Python virtual environment...${NC}"
-cd "$REVIEW_GATE_DIR"
+cd "$CURSOR_ENHANCER_DIR"
 
 # Install python3-venv on Linux if needed
 if [[ "$OS" == "linux" ]]; then
@@ -135,7 +107,7 @@ try:
     with open(cursor_mcp_file, 'r') as f:
         config = json.load(f)
     servers = config.get('mcpServers', {})
-    servers.pop('review-gate-v2', None)
+    servers.pop('cursor-enhancer', None)
     print(json.dumps(servers, indent=2))
 except (IOError, json.JSONDecodeError):
     print('{}')
@@ -161,13 +133,13 @@ TEMP_MCP_FILE="/tmp/existing_mcp_servers.$$.json"
 echo "$EXISTING_SERVERS" >"$TEMP_MCP_FILE"
 
 # Create and execute a Python script to handle the JSON processing
-if ! python3 - "$TEMP_MCP_FILE" "$REVIEW_GATE_DIR" "$CURSOR_MCP_FILE" <<EOF; then
+if ! python3 - "$TEMP_MCP_FILE" "$CURSOR_ENHANCER_DIR" "$CURSOR_MCP_FILE" <<EOF; then
 import json
 import os
 import sys
 
 temp_mcp_file = sys.argv[1]
-review_gate_dir = sys.argv[2]
+cursor_enhancer_dir = sys.argv[2]
 cursor_mcp_file = sys.argv[3]
 
 try:
@@ -183,13 +155,13 @@ try:
     if not isinstance(existing_servers, dict):
         existing_servers = {}
 
-    existing_servers['review-gate-v2'] = {
-        'command': os.path.join(review_gate_dir, '.venv/bin/python'),
-        'args': [os.path.join(review_gate_dir, 'review_gate_v2_mcp.py')],
+    existing_servers['cursor-enhancer'] = {
+        'command': os.path.join(cursor_enhancer_dir, '.venv/bin/python'),
+        'args': [os.path.join(cursor_enhancer_dir, 'cursor_enhancer_mcp.py')],
         'env': {
-            'PYTHONPATH': review_gate_dir,
+            'PYTHONPATH': cursor_enhancer_dir,
             'PYTHONUNBUFFERED': '1',
-            'REVIEW_GATE_MODE': 'cursor_integration'
+            'CURSOR_ENHANCER_MODE': 'cursor_integration'
         }
     }
 
@@ -249,13 +221,13 @@ fi
 
 # Test MCP server
 echo -e "${YELLOW}🧪 Testing MCP server...${NC}"
-cd "$REVIEW_GATE_DIR"
+cd "$CURSOR_ENHANCER_DIR"
 source .venv/bin/activate
 TEMP_DIR=$(python3 -c 'import tempfile; print(tempfile.gettempdir())')
-timeout 5s python review_gate_v2_mcp.py >"$TEMP_DIR/mcp_test.log" 2>&1 || true
+timeout 5s python cursor_enhancer_mcp.py >"$TEMP_DIR/mcp_test.log" 2>&1 || true
 deactivate
 
-if grep -q "Review Gate 2.0 server initialized" "$TEMP_DIR/mcp_test.log"; then
+if grep -q "Cursor Enhancer server initialized" "$TEMP_DIR/mcp_test.log"; then
     echo -e "${GREEN}✅ MCP server test successful${NC}"
 else
     echo -e "${YELLOW}⚠️ MCP server test inconclusive (may be normal)${NC}"
@@ -263,19 +235,19 @@ fi
 rm -f "$TEMP_DIR/mcp_test.log"
 
 # Install Cursor extension
-EXTENSION_FILE="$PROJECT_ROOT/cursor-extension/dist/review-gate-v2-3.0.0.vsix"
+EXTENSION_FILE="$PROJECT_ROOT/cursor-extension/dist/cursor-enhancer-3.0.0.vsix"
 if [[ -f "$EXTENSION_FILE" ]]; then
     echo -e "${YELLOW}🔌 Installing Cursor extension...${NC}"
 
     # Copy extension to installation directory
-    cp "$EXTENSION_FILE" "$REVIEW_GATE_DIR/"
+    cp "$EXTENSION_FILE" "$CURSOR_ENHANCER_DIR/"
 
     echo -e "${BLUE}📋 MANUAL STEP REQUIRED:${NC}"
     echo -e "${YELLOW}Please complete the extension installation manually:${NC}"
     echo -e "1. Open Cursor IDE"
-    echo -e "2. Press Cmd+Shift+P"
+    echo -e "2. Press Ctrl+Shift+P"
     echo -e "3. Type 'Extensions: Install from VSIX'"
-    echo -e "4. Select: $REVIEW_GATE_DIR/review-gate-v2-3.0.0.vsix"
+    echo -e "4. Select: $CURSOR_ENHANCER_DIR/cursor-enhancer-3.0.0.vsix"
     echo -e "5. Restart Cursor when prompted"
     echo ""
 
@@ -283,9 +255,6 @@ if [[ -f "$EXTENSION_FILE" ]]; then
     if command -v cursor &>/dev/null; then
         echo -e "${YELLOW}🚀 Opening Cursor IDE...${NC}"
         cursor . &
-    elif [[ -d "/Applications/Cursor.app" ]]; then
-        echo -e "${YELLOW}🚀 Opening Cursor IDE...${NC}"
-        open -a "Cursor" . &
     else
         echo -e "${YELLOW}💡 Please open Cursor IDE manually${NC}"
     fi
@@ -295,43 +264,34 @@ else
 fi
 
 # Install global rule (optional)
-if [[ "$OS" == "macos" ]]; then
-    CURSOR_RULES_DIR="$HOME/Library/Application Support/Cursor/User/rules"
-else
-    CURSOR_RULES_DIR="$HOME/.config/Cursor/User/rules"
-fi
+CURSOR_RULES_DIR="$HOME/.config/Cursor/User/rules"
 
 if [[ -f "$PROJECT_ROOT/ReviewGateV2.mdc" ]]; then
     echo -e "${YELLOW}📜 Installing global rule...${NC}"
     mkdir -p "$CURSOR_RULES_DIR"
-    cp "$PROJECT_ROOT/ReviewGateV2.mdc" "$CURSOR_RULES_DIR/"
+    cp "$PROJECT_ROOT/CursorEnhancerV2.mdc" "$CURSOR_RULES_DIR/"
     echo -e "${GREEN}✅ Global rule installed${NC}"
 fi
 
 # Clean up any existing temp files
 echo -e "${YELLOW}🧹 Cleaning up temporary files...${NC}"
 TEMP_DIR=$(python3 -c 'import tempfile; print(tempfile.gettempdir())')
-rm -f "$TEMP_DIR"/review_gate_* "$TEMP_DIR"/mcp_response* 2>/dev/null || true
+rm -f "$TEMP_DIR"/cursor_enhancer_* "$TEMP_DIR"/mcp_response* 2>/dev/null || true
 
 echo ""
-echo -e "${GREEN}🎉 Review Gate V2 Installation Complete!${NC}"
+echo -e "${GREEN}🎉 Cursor Enhancer Installation Complete!${NC}"
 echo -e "${GREEN}=======================================${NC}"
 echo ""
 echo -e "${BLUE}📍 Installation Summary:${NC}"
-echo -e "   • MCP Server: $REVIEW_GATE_DIR"
+echo -e "   • MCP Server: $CURSOR_ENHANCER_DIR"
 echo -e "   • MCP Config: $CURSOR_MCP_FILE"
-echo -e "   • Extension: $REVIEW_GATE_DIR/review-gate-v2-3.0.0.vsix"
-echo -e "   • Global Rule: $CURSOR_RULES_DIR/ReviewGateV2.mdc"
+echo -e "   • Extension: $CURSOR_ENHANCER_DIR/cursor-enhancer-3.0.0.vsix"
+echo -e "   • Global Rule: $CURSOR_RULES_DIR/CursorEnhancerV2.mdc"
 echo ""
 echo -e "${BLUE}🧪 Testing Your Installation:${NC}"
 echo -e "1. Restart Cursor completely"
-echo -e "2. Press ${YELLOW}Cmd+Shift+R${NC} to test manual trigger"
-echo -e "3. Or ask Cursor Agent: ${YELLOW}'Use the review_gate_chat tool'${NC}"
-echo ""
-echo -e "${BLUE}🎤 Speech-to-Text Features:${NC}"
-echo -e "   • Click microphone icon in popup"
-echo -e "   • Speak clearly for 2-3 seconds"
-echo -e "   • Click stop to transcribe"
+echo -e "2. Press ${YELLOW}Ctrl+Shift+R${NC} to test manual trigger"
+echo -e "3. Or ask Cursor Agent: ${YELLOW}'Use the cursor_enhancer_chat tool'${NC}"
 echo ""
 echo -e "${BLUE}📷 Image Upload Features:${NC}"
 echo -e "   • Click camera icon in popup"
@@ -339,17 +299,16 @@ echo -e "   • Select images (PNG, JPG, etc.)"
 echo -e "   • Images are included in response"
 echo ""
 echo -e "${BLUE}🔧 Troubleshooting:${NC}"
-echo -e "   • Logs: ${YELLOW}tail -f $(python3 -c 'import tempfile; print(tempfile.gettempdir())')/review_gate_v2.log${NC}"
-echo -e "   • Test SoX: ${YELLOW}sox --version${NC}"
+echo -e "   • Logs: ${YELLOW}tail -f $(python3 -c 'import tempfile; print(tempfile.gettempdir())')/cursor_enhancer.log${NC}"
 echo -e "   • Browser Console: ${YELLOW}F12 in Cursor${NC}"
 echo ""
-echo -e "${GREEN}✨ Enjoy your voice-activated Review Gate! ✨${NC}"
+echo -e "${GREEN}✨ Enjoy your enhanced Cursor workflow! ✨${NC}"
 
 # Final verification
 echo -e "${YELLOW}🔍 Final verification...${NC}"
-if [[ -f "$REVIEW_GATE_DIR/review_gate_v2_mcp.py" ]] &&
+if [[ -f "$CURSOR_ENHANCER_DIR/cursor_enhancer_mcp.py" ]] &&
     [[ -f "$CURSOR_MCP_FILE" ]] &&
-    [[ -d "$REVIEW_GATE_DIR/.venv" ]]; then
+    [[ -d "$CURSOR_ENHANCER_DIR/.venv" ]]; then
     echo -e "${GREEN}✅ All components installed successfully${NC}"
     exit 0
 else
