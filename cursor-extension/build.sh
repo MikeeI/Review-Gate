@@ -29,16 +29,7 @@ command_exists() {
 install_deps() {
     echo -e "${YELLOW}📦 Installing dependencies...${NC}"
 
-    if command_exists pnpm; then
-        echo -e "${GREEN}✓ Using pnpm${NC}"
-        pnpm install
-    elif command_exists npm; then
-        echo -e "${GREEN}✓ Using npm${NC}"
-        npm install
-    else
-        echo -e "${RED}❌ Neither pnpm nor npm found${NC}"
-        exit 1
-    fi
+    npm install
 
     echo -e "${GREEN}✅ Dependencies installed${NC}"
 }
@@ -54,17 +45,9 @@ build_extension() {
 
     # Build based on type
     if [ "$BUILD_TYPE" = "dev" ]; then
-        if command_exists pnpm; then
-            pnpm run build:dev
-        else
-            npm run build:dev
-        fi
+        npm run build:dev
     else
-        if command_exists pnpm; then
-            pnpm run build
-        else
-            npm run build
-        fi
+        npm run build
     fi
 
     echo -e "${GREEN}✅ Extension built successfully${NC}"
@@ -100,11 +83,7 @@ install_cursor() {
 lint_code() {
     echo -e "${YELLOW}🔍 Running linter...${NC}"
 
-    if command_exists pnpm; then
-        pnpm run lint:fix
-    else
-        npm run lint:fix
-    fi
+    npm run lint:fix
 
     echo -e "${GREEN}✅ Linting complete${NC}"
 }
@@ -113,11 +92,7 @@ lint_code() {
 clean_build() {
     echo -e "${YELLOW}🧹 Cleaning build artifacts...${NC}"
 
-    if command_exists pnpm; then
-        pnpm run clean
-    else
-        npm run clean
-    fi
+    npm run clean
 
     echo -e "${GREEN}✅ Clean complete${NC}"
 }
@@ -128,11 +103,7 @@ bump_version() {
 
     echo -e "${YELLOW}📈 Bumping version ($VERSION_TYPE)...${NC}"
 
-    if command_exists pnpm; then
-        pnpm run "version:$VERSION_TYPE"
-    else
-        npm run "version:$VERSION_TYPE"
-    fi
+    npm run "version:$VERSION_TYPE"
 
     echo -e "${GREEN}✅ Version bumped${NC}"
 }

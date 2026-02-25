@@ -50,7 +50,7 @@ environments with comprehensive automated installation.
 
 ```bash
 # Install dependencies (prefer pnpm)
-pnpm install
+npm install
 # OR
 npm install
 
@@ -76,7 +76,7 @@ cd cursor-extension/
 ```bash
 # JavaScript linting (ESLint)
 npm run lint            # Root project
-cd cursor-extension/ && pnpm run lint:fix  # Extension
+cd cursor-extension/ && npm run lint:fix  # Extension
 
 # Python linting (ruff)
 npm run lint:py
@@ -108,18 +108,18 @@ python -c "from src.config.constants import TimeoutConfig, FilePatterns; print('
 cd cursor-extension/
 
 # Development workflow
-pnpm run dev            # Build and install in Cursor (dev mode)
-pnpm run release        # Build and install in Cursor (production)
+npm run dev            # Build and install in Cursor (dev mode)
+npm run release        # Build and install in Cursor (production)
 
 # Manual packaging
-pnpm run build          # Build for release
-pnpm run build:dev      # Build for development
-pnpm run package        # Create .vsix package
+npm run build          # Build for release
+npm run build:dev      # Build for development
+npm run package        # Create .vsix package
 
 # Version management
-pnpm run version:patch  # Bump patch version
-pnpm run version:minor  # Bump minor version
-pnpm run version:major  # Bump major version
+npm run version:patch  # Bump patch version
+npm run version:minor  # Bump minor version
+npm run version:major  # Bump major version
 ```
 
 ### Installation Testing
